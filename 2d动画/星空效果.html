@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>粒子星空</title>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+	<script>
+		var canvas = document.getElementById('canvas');
+		var cxt = canvas.getContext('2d');
+
+		var W,H;
+
+		var nodes = [];
+		var edges = [];
+
+		var mouse = {x: 0, y: 0, color:'#fff'};
+
+		window.onresize = function(){
+			W = canvas.width = window.innerWidth;
+			H = canvas.height = window.innerHeight;
+
+			if(nodes.length == 0){
+				createParticles()
+			}
+		};
+
+		window.onresize();
+
+		function createParticles(){
+			for(var i=0; i<100; i++){
+				var node = {
+					flag: i == 0,
+					x: Math.random() * W,
+					y: Math.random() * H,
+					vx: (Math.random() - 0.5) * 1.2,
+					vy: (Math.random() - 0.5) * 1.2,
+					r: Math.random() < 0.9 ? Math.random() * 3 + 2 : Math.random() * 3,
+					color: `rgba(${~~(Math.random() * 200 + 55)},${~~(Math.random() * 200 + 55)},${~~(Math.random() * 200 + 55)},${Math.round(Math.random() * 9 + 1)/10})`
+				};
+				nodes.push(node);
+			}
+
+			for(var i=0,len = nodes.length; i<len; i++){
+				for(var j=i+1; j<len; j++){
+					var edge = {
+						start: nodes[i],
+						end: nodes[j]
+					}
+					edges.push(edge)
+				}
+			}
+
+		}
+
+		function update(){
+			nodes.forEach((item,i)=>{
+				if(item.flag){
+					return false;
+				}
+				item.x += item.vx;
+				item.y += item.vy;
+
+				if(item.x - item.r < 0 || item.x + item.r > W){
+					item.vx *= -1;
+				}
+				if(item.y - item.r < 0 || item.y + item.r > H){
+					item.vy *= -1;
+				}
+
+			});
+		}
+
+		function render(){
+			cxt.globalCompositeOperation = 'source-over';
+			cxt.fillStyle = 'rgba(0, 0, 0, .2)';
+			cxt.fillRect(0, 0, W, H);
+			cxt.globalCompositeOperation = 'lighter';
+
+			edges.forEach((item,i)=>{
+				var l = distance(item);
+				var w = W / 8;
+
+				if(l > w) return false;
+
+				cxt.save();
+				cxt.strokeStyle = item.start.color;
+				cxt.lineWidth = (1 - l/w) * 2.5;
+				cxt.globalAlpha = 1 - l/w;
+				cxt.beginPath();
+				cxt.moveTo(item.start.x, item.start.y);
+				cxt.lineTo(item.end.x, item.end.y);
+				cxt.stroke();
+				cxt.restore();
+			});
+
+			nodes.forEach((item,i)=>{
+				if(item.flag) return false;
+				cxt.save();
+				cxt.fillStyle = item.color;
+				cxt.beginPath();
+				cxt.arc(item.x, item.y, item.r, 0, 2*Math.PI);
+				cxt.fill();
+				cxt.restore();
+			});
+		}
+
+
+		function distance(node){
+			var x = Math.pow(node.start.x - node.end.x, 2);
+			var y = Math.pow(node.start.y - node.end.y, 2);
+			return Math.sqrt(x + y);
+		}
+
+		canvas.onmousemove = function(e){
+			mouse.x = e.offsetX;
+			mouse.y = e.offsetY;
+			mouse.color = `rgba(${~~(Math.random() * 200 + 55)},${~~(Math.random() * 200 + 55)},${~~(Math.random() * 200 + 55)},${Math.round(Math.random() * 9 + 1)/10})`;
+		};
+
+		function moveFirstNode(){
+			nodes[0].x += (mouse.x - nodes[0].x) / 10;
+			nodes[0].y += (mouse.y - nodes[0].y) / 10;
+			nodes[0].color = mouse.color
+		}
+
+		function move(){
+			update();
+			render();
+			moveFirstNode();
+			requestAnimationFrame(move)
+		}
+
+		requestAnimationFrame(move)
+
+
+
+
+
+
+
+
+
+	</script>
+</body>
+</html>

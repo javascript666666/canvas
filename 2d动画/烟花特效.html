@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>烟花</title>
+</head>
+
+<body>
+    <canvas id="canvas" width="300" height="300"></canvas>
+    <script>
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+
+        var W, H, probability = 0.04,
+            p = [];
+
+        window.onresize = function() {
+            W = canvas.width = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+        }
+
+        window.onresize();
+
+
+        var Particle = function(x, y, color) {
+            this.x = x;
+            this.y = y;
+            this.color = color;
+            this.r = Math.random() * 3 + 1;
+            this.vx = (Math.random() - 0.5) * 10;
+            this.vy = (Math.random() - 0.5) * 10;
+            this.D = 25;
+            this.g = 0.05;
+            this.alpha = Math.random() * 0.5 + 0.5;
+            return this;
+        }
+
+        Particle.prototype.move = function(W, H) {
+            this.x += this.vx;
+            this.y += this.vy;
+            this.vy += this.g;
+            this.alpha -= 0.01;
+
+            if (this.x < -this.r || this.x > W || this.y < -this.r || this.y > H || this.alpha <= 0) {
+                return false;
+            }
+            return true;
+        };
+
+        Particle.prototype.draw = function(ctx) {
+            ctx.save();
+            ctx.globalAlpha = this.alpha;
+            ctx.fillStyle = this.color;
+            ctx.translate(this.x, this.y);
+            ctx.beginPath();
+            ctx.arc(0, 0, this.r, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.restore();
+        };
+
+        function update() {
+            if (p.length < 500 && Math.random() < probability) {
+                createFireWork();
+            }
+            var aLive = [];
+            p.forEach(function(item) {
+                if (item.move(W, H)) {
+                    aLive.push(item);
+                }
+            });
+            p = aLive;
+        }
+
+        function createFireWork() {
+            var x = Math.random() * (W * 0.9) - W * 0.05;
+            var y = Math.random() * (H * 0.9) - H * 0.05;
+            var color = `rgb(${~~(Math.random() * 200 + 55)},${~~(Math.random() * 200 + 55)},${~~(Math.random() * 200 + 55)})`;
+            var n = Math.random() * 50 + 400;
+            for (var i = 0; i < n; i++) {
+                var particle = new Particle(x, y, color);
+                var vy = Math.sqrt(particle.D - particle.vx * particle.vx);
+                if (Math.abs(particle.vy) > vy) {
+                    particle.vy = particle.vy > 0 ? vy : -vy;
+                }
+                p.push(particle);
+            }
+        }
+
+        function render() {
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.fillStyle = 'rgba(0, 0, 0, .2)';
+            ctx.fillRect(0, 0, W, H);
+            ctx.globalCompositeOperation = 'lighter';
+            p.forEach(function(item) {
+                item.draw(ctx);
+            });
+        }
+
+        function init() {
+            update();
+            render();
+            window.requestAnimationFrame(init)
+        }
+
+        window.requestAnimationFrame(init)
+    </script>
+</body>
+
+</html>

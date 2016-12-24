@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>打开控制台查看事件对象</h1>
+    <canvas id="canvas" width="300" height="300"></canvas>
+    <script src="./EventModel.js"></script>
+    <script src="./Model.js"></script>
+    <script src="./EventsEngine.js"></script>
+    <script src="./Tween.js"></script>
+    <script type="text/javascript">
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+
+        var W = canvas.width = 600;
+        var H = canvas.height = 600;
+
+        canvas.style.boxShadow = '4px 4px 8px rgba(0, 0, 0, 0.5)';
+
+        // 示例 对象
+        var Circle = function(x, y, r, color) {
+            this.x = x;
+            this.y = y;
+            this.r = r;
+            this.fs = color;
+            return this;
+        };
+
+        Circle.prototype.draw = function(ctx) {
+            ctx.save();
+            ctx.fillStyle = this.fs;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+            return this;
+        };
+
+        // 实现 isPointInPath 接口
+        Circle.prototype.isPointInPath = function(mouse) {
+            if (distance(mouse, this.x, this.y) <= this.r) {
+                return true;
+            } else {
+                return false;
+            }
+        };
+
+        function distance(mouse, x, y) {
+            var dx = mouse.x - x;
+            var dy = mouse.y - y;
+            return Math.sqrt(dx * dx + dy * dy);
+        };
+
+        // 事件模型对象注入
+        Events.mixTo(Circle);
+
+        // 构造顶层容器对象
+        var model = new Model();
+
+        // 向 当前 canvas 画布 注册事件模型并初始化
+        var canvasEv = new EventEngine(canvas, model).init();
+
+        // 创建示例对象
+        var circle1 = new Circle(W / 2, H / 2, 100, 'rgba(178, 196, 110, 0.7)');
+        var circle2 = new Circle(100, 100, 50, 'rgba(132, 235, 102, 0.69)');
+        var circle3 = new Circle(400, 400, 80, 'rgba(171, 42, 47, 1)');
+
+        // 在顶层容器注册
+        model.add(circle1);
+        model.add(circle2);
+        model.add(circle3);
+
+        circle1.on('mouseover', function(e) {
+            console.log(e);
+            animation(100, 120, 500, function(x) {
+                circle1.r = x;
+            });
+        });
+
+        circle1.on('mouseout', function(e) {
+            console.log(e);
+            animation(120, 100, 500, function(x) {
+                circle1.r = x;
+            });
+        });
+        
+        circle2.on('click', function(e) {
+            console.log(e);
+            this.fs = 'rgba(40, 163, 168, 0.73)'
+        });
+        
+        var dragable = false;
+        
+        circle3.on('mousedown', function(e) {
+          dragable = true;
+        });
+        
+        circle3.on('mousemove', function(e) {
+          if(!dragable) return;
+          this.x += e.mouse.deltaX;
+          this.y += e.mouse.deltaY;
+        });
+        
+        circle3.on('mouseup', function(e) {
+          dragable = false;
+        });
+
+
+        (function() {
+            ctx.clearRect(0, 0, W, H);
+
+            circle1.draw(ctx);
+            circle2.draw(ctx);
+            circle3.draw(ctx);
+            
+            canvasEv.dispatch();
+
+            requestAnimationFrame(arguments.callee);
+        })()
+
+
+        function animation(start, end, time, fn) {
+            var tween = new TWEEN.Tween({
+                x: start
+            }).to({
+                x: end
+            }, time).onUpdate(function() {
+                fn && fn(this.x)
+            }).easing(TWEEN.Easing.Bounce.Out).start();
+
+            (function(time) {
+                requestAnimationFrame(arguments.callee);
+                TWEEN.update(time)
+            })()
+        }
+    </script>
+</body>
+
+</html>
