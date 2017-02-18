@@ -21,18 +21,40 @@
     
     let W = canvas.width = 600;
     let H = canvas.height = 400;
-    let vx = 0, ax = 0.1;
+    let vx = 0, ax = 0;
     
     const ball = new Ball({
-      x:100, y:200
+      x:W/2, y:H/2
     }).render(ctx);
+    
+    window.addEventListener('keydown', function (e){
+      let key = e.keyCode;
+      switch(key){
+        case 37:
+          ax = -0.1
+          break;
+        case 39:
+          ax = 0.1
+          break;
+      }
+    });
+    window.addEventListener('keyup', function (e){
+      ax = 0;
+    });
     
     (function render(){
       window.requestAnimationFrame(render, canvas);
       ctx.clearRect(0, 0, W, H);
       
       vx += ax;
-      ball.x = ball.x > W + ball.r ? -ball.r : ball.x + vx;
+      ball.x += vx;
+      
+      if(ball.x > W + ball.r){
+        ball.x = -ball.r;
+      }
+      if(ball.x < -ball.r){
+        ball.x = W + ball.r;
+      }
       
       ball.render(ctx);
     })();

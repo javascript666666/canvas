@@ -10,42 +10,38 @@
 	</style>
 </head>
 <body>
-	<canvas id="canvas" width="800" height="600"></canvas>
+	<canvas id="canvas"></canvas>
 	<script src="../utils/fq_canvas.js"></script>
+  <script src="../utils/fq_ball.js"></script>
 	<script>
-		var canvas = document.getElementById('canvas');
-		var ctx = canvas.getContext('2d');
+		const canvas = document.getElementById('canvas');
+		const ctx = canvas.getContext('2d');
+		
+		let W = canvas.width = 600;
+		let H = canvas.height = 400;
 
-		var ball = new Ball({
-			x: 400, y: 300,
-			r: 80,
-      fs: '#1FFFF9',
-			lineWidth: 2
+		const ball = new Ball({
+			x: W/2, y: H/2
 		}).render(ctx);
+		
+		let angle = 0;
+		let swing = 60;
+		let vx = 1;
+		let vy = 0.05;
 
-		var angle = 0;
-		const swing = 50;
-		const vx = 1;
-		const vy = 0.05;
+		(function render(){
+			window.requestAnimationFrame(render, canvas);
+			ctx.clearRect(0, 0, W, H);
 
-		(function (){
-			window.requestAnimationFrame(arguments.callee, canvas);
-
-			ctx.clearRect(0, 0, 800, 600);
-
-			ball.x += vx;
-
-			if(ball.x > 800 + ball.r){
-				ball.x = - ball.r;
-			}
-            
+			ball.x = ball.x > W + ball.r ? -ball.r : ball.x + vx;
+			
       // 将这三句代码的注释打开看看效果
-			ball.y = 300 + Math.sin(angle) * swing;
+			ball.y = H/2 + Math.sin(angle) * swing;
 			angle += 0.05;
 			angle %= Math.PI * 2;
-
+			
 			ball.render(ctx);
-		})()
+		})();
 	</script>
 </body>
 </html>

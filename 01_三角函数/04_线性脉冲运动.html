@@ -10,36 +10,36 @@
 	</style>
 </head>
 <body>
-	<canvas id="canvas" width="800" height="600"></canvas>
+	<canvas id="canvas"></canvas>
 	<script src="../utils/fq_canvas.js"></script>
+  <script src="../utils/fq_ball.js"></script>
 	<script>
-		var canvas = document.getElementById('canvas');
-		var ctx = canvas.getContext('2d');
+		const canvas = document.getElementById('canvas');
+		const ctx = canvas.getContext('2d');
+		
+		let W = canvas.width = 600;
+		let H = canvas.height = 400;
 
-    var ball = new Ball({
-			x: 400, y: 300,
-			r: 80,
-      fs: '#1FFFF9',
-			lineWidth: 2
+		const ball = new Ball({
+			x: W/2, y: H/2,
+			r: 80
 		}).render(ctx);
 
-		var angle = 0;
-		const swing = 0.5;
-		const speed = 0.02;
-		const x = 400, y = 300;
-		const initScale = 1;
+		let angle = 0;
+		let swing = 0.5;
+		let speed = 0.05;
+		let initScale = 1;
 
-		(function (){
-			window.requestAnimationFrame(arguments.callee, canvas);
-
-			ctx.clearRect(0, 0, 800, 600);
+		(function render(){
+			window.requestAnimationFrame(render, canvas);
+			ctx.clearRect(0, 0, W, H);
 
 			ball.scaleX = ball.scaleY = initScale + Math.sin(angle)*swing;
 			angle += speed;
 			angle %= Math.PI * 2;
 
 			ball.render(ctx);
-		})()
+		})();
 	</script>
 </body>
 </html>

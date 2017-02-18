@@ -14,6 +14,7 @@
 <body>
   <canvas id="canvas" width="600" height="400"></canvas>
   <script src="../utils/fq_canvas.js"></script>
+  <script src="../utils/fq_arrow.js"></script>
   <script>
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
@@ -26,8 +27,8 @@
     
     const arrow = new Arrow().render(ctx);
     
-    (function (){
-      window.requestAnimationFrame(arguments.callee);
+    (function render(){
+      window.requestAnimationFrame(render, canvas);
       ctx.clearRect(0, 0, w, h);
       
       let dx = mouse.x - arrow.x;

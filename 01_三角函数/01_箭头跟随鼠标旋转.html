@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Document</title>
+	<title></title>
 	<style>
 		canvas {
 			box-shadow: 4px 4px 10px rgba(0, 0, 0, .56);
@@ -10,24 +10,27 @@
 	</style>
 </head>
 <body>
-	<canvas id="canvas" width="800" height="600"></canvas>
+	<canvas id="canvas"></canvas>
 	<script src="../utils/fq_canvas.js"></script>
+	<script src="../utils/fq_arrow.js"></script>
 	<script>
-		var canvas = document.getElementById('canvas');
-		var ctx = canvas.getContext('2d');
+		const canvas = document.getElementById('canvas');
+		const ctx = canvas.getContext('2d');
+		
+		let W = canvas.width = 600;
+		let H = canvas.height = 400;
     
-		var arrow = new Arrow({
-			x: 400, y: 300,
-			w: 120, h: 50
+		const arrow = new Arrow({
+			x: W/2, y: H/2
 		}).render(ctx);
 
 		canvas.onmousemove = function (e){
-			var x = e.offsetX;
-			var	y = e.offsetY;
-			var dx = x - arrow.x;
-			var dy = y - arrow.y;
+			let x = e.offsetX;
+			let	y = e.offsetY;
+			let dx = x - arrow.x;
+			let dy = y - arrow.y;
 			arrow.rotation = Math.atan2(dy, dx);
-			ctx.clearRect(0, 0, 800, 600);
+			ctx.clearRect(0, 0, W, H);
 			arrow.render(ctx);
 		};
 	</script>

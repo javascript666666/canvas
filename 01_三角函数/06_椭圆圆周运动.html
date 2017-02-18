@@ -12,35 +12,42 @@
 <body>
 	<canvas id="canvas" width="800" height="600"></canvas>
 	<script src="../utils/fq_canvas.js"></script>
+  <script src="../utils/fq_ball.js"></script>
 	<script>
-		var canvas = document.getElementById('canvas');
-		var ctx = canvas.getContext('2d');
+		const canvas = document.getElementById('canvas');
+		const ctx = canvas.getContext('2d');
+		
+		let W = canvas.width = 600;
+		let H = canvas.height = 400;
 
-		var ball = new Ball({
-			x: 400, y: 300,
-			r: 30,
-      fs: '#1FFFF9',
-			lineWidth: 2
+		const ball = new Ball({
+			x: W/2, y: H/2
 		}).render(ctx);
 
-		var angle = 0;
-		const speed = 0.05;
-		const x = 400, y = 300;
-		const a = 200, b = 80;
+		let angle = 0;
+		let speed = 0.02;
+		let ra = 200, rb = 80;
 
-		(function (){
-			window.requestAnimationFrame(arguments.callee, canvas);
+		(function render(){
+			window.requestAnimationFrame(render, canvas);
+			ctx.clearRect(0, 0, W, H);
+			
+			ctx.save();
+			ctx.translate(W/2, H/2);
+			ctx.scale(1, 0.4);
+			ctx.beginPath();
+			ctx.arc(0, 0, 200, 0, 2*Math.PI);
+			ctx.stroke();
+			ctx.restore();
 
-			ctx.clearRect(0, 0, 800, 600);
-
-			ball.x = x + a * Math.sin(angle);
-			ball.y = y + b * Math.cos(angle);
+			ball.x = W/2 + ra * Math.sin(angle);
+			ball.y = H/2 + rb * Math.cos(angle);
 
 			angle += speed;
 			angle %= Math.PI * 2;
 
 			ball.render(ctx);
-		})()
+		})();
 	</script>
 </body>
 </html>
