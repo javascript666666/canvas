@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>速度向量的扩展</title>
+  <style>
+    canvas {
+      box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas" width="600" height="400"></canvas>
+  <script src="../utils/fq_canvas.js"></script>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    const mouse = fq.mouse(canvas);
+    
+    let w = canvas.width;
+    let h = canvas.height;
+    let speed = 4, vr = 2;
+    let x = w / 2, y = h / 2;
+    
+    const arrow = new Arrow({
+      x: x, y: y
+    }).render(ctx);
+    
+    (function (){
+      window.requestAnimationFrame(arguments.callee);
+      ctx.clearRect(0, 0, w, h);
+      
+      //arrow.x += Math.cos(arrow.rotation) * speed;
+      //arrow.y += Math.sin(arrow.rotation) * speed;
+      
+      arrow.rotation += fq.toRad(vr);
+      arrow.rotation %= 2*Math.PI;
+      
+      arrow.render(ctx);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>箭头跟随鼠标运动</title>
+  <style>
+    canvas {
+      box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas" width="600" height="400"></canvas>
+  <script src="../utils/fq_canvas.js"></script>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    const mouse = fq.mouse(canvas);
+    
+    let w = canvas.width;
+    let h = canvas.height;
+    let speed = 3;
+    
+    const arrow = new Arrow().render(ctx);
+    
+    (function (){
+      window.requestAnimationFrame(arguments.callee);
+      ctx.clearRect(0, 0, w, h);
+      
+      let dx = mouse.x - arrow.x;
+      let dy = mouse.y - arrow.y;
+      let rad = Math.atan2(dy, dx);
+
+      let vx = speed * Math.cos(rad);
+      let vy = speed * Math.sin(rad);
+      
+      arrow.x += vx;
+      arrow.y += vy;
+      arrow.rotation = rad;
+      
+      arrow.render(ctx);
+    })();
+  </script>
+</body>
+</html>

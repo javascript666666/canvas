@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<style>
+		canvas {
+			box-shadow: 4px 4px 10px rgba(0, 0, 0, .56);
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas" width="800" height="600"></canvas>
+	<script src="../utils/fq_canvas.js"></script>
+	<script>
+		var canvas = document.getElementById('canvas');
+		var ctx = canvas.getContext('2d');
+
+		var ball = new Ball({
+			x: 400, y: 300,
+			r: 80,
+      fs: '#1FFFF9',
+			lineWidth: 2
+		}).render(ctx);
+
+		let angle = 0;  // 启示弧度
+		const swing = 200; // 振幅
+
+		(function (){
+			window.requestAnimationFrame(arguments.callee, canvas);
+			ctx.clearRect(0, 0, 800, 600);
+			ball.x = 400 + Math.sin(angle) * swing;  // 动画核心计算
+			angle += 0.05; // 变化量，数值越大运动越快
+			angle %= Math.PI * 2;
+			ball.render(ctx);
+		})()
+	</script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>双轴速度向量</title>
+  <style>
+    canvas {
+      box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas" width="600" height="400"></canvas>
+  <script src="../utils/fq_canvas.js"></script>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    let w = canvas.width;
+    let h = canvas.height;
+    let vx = 2;
+    let vy = 1;
+    
+    const ball = new Ball({
+      x: 50, y: 50,
+      r: 20,
+      fs: 'rgba(255, 50, 102, 0.5)',
+      ss: 'rgba(0, 0, 0, 0)'
+    }).render(ctx);
+    
+    (function (){
+      window.requestAnimationFrame(arguments.callee);
+      ctx.clearRect(0, 0, w, h)
+      ball.x += vx;
+      ball.y += vy;
+      ball.render(ctx);
+    })();
+  </script>
+</body>
+</html>

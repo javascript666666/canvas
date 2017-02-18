@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    canvas {
+      box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas" width="600" height="500"></canvas>
+  <script src="../../utils/fq_canvas.js"></script>
+  <script>
+    var canvas = document.querySelector('canvas');
+    var ctx = canvas.getContext('2d');
+    
+    var w = canvas.width;
+    var h = canvas.height;
+    
+    var balls = [], data = [];
+    
+    for(var i=0; i<400; i++){
+      balls.push(new Ball({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() > 0.9 ? Math.random() * 2 + 2 : Math.random() * 2 + 1,
+        ss: 'rgba(0, 0, 0, 0)',
+        fs: `rgba(${~~(Math.random() * 200) + 55}, ${~~(Math.random() * 200) + 55}, ${~~(Math.random() * 200) + 55}, ${(Math.random()*0.6 + 0.4).toFixed(1)})`
+      }));
+    }
+    
+    var swing = 5;
+    var vx = 0.05, vy = 0.07;
+    var radX = 0, radY = 0;
+    var inCanvas = false;
+    
+    var mouse = fq.mouse(canvas);
+    
+    fq.extend(data, balls, true);
+    
+    canvas.addEventListener('mouseover', function (e){
+      inCanvas = true;
+    });
+    canvas.addEventListener('mouseout', function (e){
+      inCanvas = false;
+    });
+    
+    (function render(){
+      window.requestAnimationFrame(render, canvas);
+    
+      ctx.clearRect(0, 0, w, h);
+      for(var i=0; i<100; i++){
+        if(inCanvas){
+          balls[i].x += (mouse.x - balls[i].x ) / 50 + (Math.random() - 0.5) * 2;
+          balls[i].y += (mouse.y - balls[i].y ) / 50 + (Math.random() - 0.5) * 2;
+        }else{
+          balls[i].x += (data[i].x - balls[i].x ) / 50 + Math.sin(radX * (Math.random() - 0.5) * 2);
+          balls[i].y += (data[i].y - balls[i].y ) / 50 + Math.sin(radY * (Math.random() - 0.5) * 2);
+        }
+        balls[i].render(ctx);
+      }
+      radX += vx;
+      radY += vy;
+      
+      radX %= 2*Math.PI;
+      radY %= 2*Math.PI;
+    })();
+  </script>
+</body>
+</html>
